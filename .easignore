@@ -1,8 +1,7 @@
 node_modules/
 .expo/
 dist/
-backend/dist/
-backend/node_modules/
+backend/
 *.log
 .env
 .env.local

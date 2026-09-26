@@ -1,0 +1,35 @@
+/* Global CSS reset for SmartShetkari Web */
+* {
+  box-sizing: border-box;
+}
+
+input,
+textarea,
+select,
+button {
+  outline: none !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Remove React Native Web default input borders */
+[data-focusable="true"]:focus {
+  outline: none !important;
+}
+
+div[role="textbox"],
+div[contenteditable] {
+  outline: none !important;
+}

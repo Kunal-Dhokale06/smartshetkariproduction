@@ -1,0 +1,74 @@
+{
+  "expo": {
+    "name": "SmartShetkari",
+    "slug": "smartshetkari",
+    "owner": "kunaldhokale",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "smartshetkari",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#008A45"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.smartshetkari.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "SmartShetkari uses your location to show accurate live weather data for your farm.",
+        "NSLocationAlwaysUsageDescription": "SmartShetkari uses your location to provide real-time weather alerts for your crops."
+      }
+    },
+    "android": {
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#008A45"
+      },
+      "package": "com.smartshetkari.app",
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "SmartShetkari uses your location to show real-time weather for your farm field.",
+          "locationWhenInUsePermission": "SmartShetkari needs your location to display accurate live weather data.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "SmartShetkari needs access to your photos to upload receipts.",
+          "cameraPermission": "SmartShetkari needs access to your camera to scan bills."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "https://smartshetkariproduction-backend.onrender.com/api/v1",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "2252d64c-b5d3-4712-9927-f3216e1e2fee"
+      }
+    }
+  }
+}
