@@ -33,6 +33,11 @@ function persistExpenses() {
 let lastSyncTime = 0;
 const SYNC_THROTTLE_MS = 30 * 1000; // 30s throttle
 
+/** Allow external callers (e.g. cropsStore restore) to reset throttle so next sync is immediate */
+export function resetExpenseSyncThrottle() {
+  lastSyncTime = 0;
+}
+
 export async function resetExpensesForUser(userId?: string | null, clearAll = false): Promise<void> {
   currentUserId = userId || null;
   const key = getStorageKey(currentUserId);

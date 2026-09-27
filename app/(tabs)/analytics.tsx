@@ -8,7 +8,7 @@ import { colors, spacing, fontSize, fontWeight, borderRadius } from '../../theme
 import { useLanguage } from '../../locales/languageContext';
 import { useExpensesStore } from '../../data/expensesStore';
 import { useSalesStore } from '../../data/salesStore';
-import { formatCurrency } from '../../utils';
+import { formatCurrency, safeNavigate } from '../../utils';
 
 const FILTER_KEYS = [
   { labelKey: 'thisWeek', text: 'This Week', multiplier: 0.25 },
@@ -113,7 +113,7 @@ export default function AnalyticsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={24} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('analytics')}</Text>

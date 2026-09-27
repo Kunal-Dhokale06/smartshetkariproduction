@@ -21,16 +21,17 @@ import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '..
 import { addExpense } from '../data/expensesStore';
 import { useCropsStore } from '../data/cropsStore';
 import { useLanguage, TranslationKey } from '../locales/languageContext';
+import { safeNavigate } from '../utils';
 
 type Category = 'Fertilizer' | 'Seeds' | 'Pesticide' | 'Labor' | 'Irrigation' | 'Other';
 
 const CATEGORIES: { key: Category; icon: any; color: string; bg: string }[] = [
-  { key: 'Fertilizer', icon: Package,     color: colors.primaryGreen, bg: '#EAF7EF' },
-  { key: 'Seeds',      icon: Sprout,      color: '#0284C7',           bg: '#E0F2FE' },
-  { key: 'Pesticide',  icon: ShieldAlert, color: '#D97706',           bg: '#FEF3C7' },
-  { key: 'Labor',      icon: Users,       color: '#7E22CE',           bg: '#F3E8FF' },
-  { key: 'Irrigation', icon: Droplets,    color: '#2563EB',           bg: '#EFF6FF' },
-  { key: 'Other',      icon: Banknote,    color: '#6B7280',           bg: '#F3F4F6' },
+  { key: 'Fertilizer', icon: Package, color: colors.primaryGreen, bg: '#EAF7EF' },
+  { key: 'Seeds', icon: Sprout, color: '#0284C7', bg: '#E0F2FE' },
+  { key: 'Pesticide', icon: ShieldAlert, color: '#D97706', bg: '#FEF3C7' },
+  { key: 'Labor', icon: Users, color: '#7E22CE', bg: '#F3E8FF' },
+  { key: 'Irrigation', icon: Droplets, color: '#2563EB', bg: '#EFF6FF' },
+  { key: 'Other', icon: Banknote, color: '#6B7280', bg: '#F3F4F6' },
 ];
 
 function getTodayString(): string {
@@ -43,13 +44,13 @@ export default function AddExpenseScreen() {
   const { t } = useLanguage();
   const { crops } = useCropsStore();
 
-  const [title, setTitle]       = useState('');
-  const [amount, setAmount]     = useState('');
+  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<Category>('Fertilizer');
-  const [crop, setCrop]         = useState(crops.length > 0 ? crops[0].name : '');
-  const [date, setDate]         = useState(getTodayString());
-  const [notes, setNotes]       = useState('');
-  const [errors, setErrors]     = useState<{ title?: string; amount?: string; crop?: string }>({});
+  const [crop, setCrop] = useState(crops.length > 0 ? crops[0].name : '');
+  const [date, setDate] = useState(getTodayString());
+  const [notes, setNotes] = useState('');
+  const [errors, setErrors] = useState<{ title?: string; amount?: string; crop?: string }>({});
 
   useEffect(() => {
     if (!crop && crops.length > 0) {
@@ -77,12 +78,12 @@ export default function AddExpenseScreen() {
     const validCropId = matchedCrop?.id && UUID_REGEX.test(matchedCrop.id) ? matchedCrop.id : undefined;
 
     addExpense({
-      title:    title.trim(),
-      amount:   parseFloat(amount.trim()),
+      title: title.trim(),
+      amount: parseFloat(amount.trim()),
       category,
-      crop:     crop.trim(),
-      cropId:   validCropId,
-      date:     date.trim() || getTodayString(),
+      crop: crop.trim(),
+      cropId: validCropId,
+      date: date.trim() || getTodayString(),
     });
 
     handleClose();
@@ -107,7 +108,7 @@ export default function AddExpenseScreen() {
   }, []);
 
   const handleScanBill = () => {
-    router.push('/scan-bill');
+    safeNavigate(() => router.push('/scan-bill'));
   };
 
   const getCategoryLabel = (key: string): string => {
@@ -137,7 +138,7 @@ export default function AddExpenseScreen() {
 
           <TouchableOpacity
             style={styles.addCropFirstBtn}
-            onPress={() => router.push('/add-crop')}
+            onPress={() => safeNavigate(() => router.push('/add-crop'))}
             activeOpacity={0.8}
           >
             <Plus size={20} color={colors.white} />
@@ -268,7 +269,7 @@ export default function AddExpenseScreen() {
           <View style={styles.actionsRow}>
             <SecondaryButton
               title={t('cancel')}
-              onPress={() => router.back()}
+              onPress={handleClose}
               style={styles.btnHalf}
             />
             <PrimaryButton

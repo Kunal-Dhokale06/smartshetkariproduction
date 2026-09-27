@@ -8,7 +8,7 @@ import { AIBanner } from '../../components/AIBanner';
 import { Card } from '../../components/ui/Card';
 import { colors, spacing, fontSize, fontWeight, borderRadius } from '../../theme';
 
-import { formatCurrency } from '../../utils';
+import { formatCurrency, safeNavigate } from '../../utils';
 import { useLanguage } from '../../locales/languageContext';
 import { useExpensesStore } from '../../data/expensesStore';
 import { useSalesStore } from '../../data/salesStore';
@@ -51,7 +51,7 @@ export default function DashboardScreen() {
           <View style={styles.quickActionsGrid}>
             <TouchableOpacity
               style={styles.quickActionItem}
-              onPress={() => router.push('/add-crop')}
+              onPress={() => safeNavigate(() => router.push('/add-crop'))}
               activeOpacity={0.8}
             >
               <View style={[styles.quickActionIconBg, { backgroundColor: '#F0FDF4' }]}>
@@ -64,7 +64,7 @@ export default function DashboardScreen() {
 
             <TouchableOpacity
               style={styles.quickActionItem}
-              onPress={() => router.push('/add-expense')}
+              onPress={() => safeNavigate(() => router.push('/add-expense'))}
               activeOpacity={0.8}
             >
               <View style={[styles.quickActionIconBg, { backgroundColor: '#FEF3C7' }]}>
@@ -77,7 +77,7 @@ export default function DashboardScreen() {
 
             <TouchableOpacity
               style={styles.quickActionItem}
-              onPress={() => router.push('/add-sale')}
+              onPress={() => safeNavigate(() => router.push('/add-sale'))}
               activeOpacity={0.8}
             >
               <View style={[styles.quickActionIconBg, { backgroundColor: '#E0F2FE' }]}>

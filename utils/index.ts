@@ -51,3 +51,11 @@ export function confirmAction(
     );
   }
 }
+
+let lastNavTime = 0;
+export function safeNavigate(action: () => void, throttleMs = 500) {
+  const now = Date.now();
+  if (now - lastNavTime < throttleMs) return;
+  lastNavTime = now;
+  action();
+}

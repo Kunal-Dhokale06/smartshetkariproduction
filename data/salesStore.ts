@@ -33,6 +33,11 @@ function persistSales() {
 let lastSyncTime = 0;
 const SYNC_THROTTLE_MS = 30 * 1000; // 30s throttle
 
+/** Allow external callers (e.g. cropsStore restore) to reset throttle so next sync is immediate */
+export function resetSalesSyncThrottle() {
+  lastSyncTime = 0;
+}
+
 export async function resetSalesForUser(userId?: string | null, clearAll = false): Promise<void> {
   currentUserId = userId || null;
   const key = getStorageKey(currentUserId);

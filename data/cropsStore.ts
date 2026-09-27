@@ -44,6 +44,9 @@ export async function resetCropsForUser(userId?: string | null, clearAll = false
     }
     globalCrops = [];
     globalLoading = false;
+    recentlyDeletedCropIds.clear();
+    recentlyRestoredCropIds.clear();
+    lastSyncTime = 0;
     notifyCropsListeners();
     return;
   }
@@ -70,6 +73,16 @@ export async function resetCropsForUser(userId?: string | null, clearAll = false
   }
 }
 
+/**
+ * Track crop IDs recently soft-deleted locally (within 60s).
+ * Prevents stale backend sync from re-adding them as "active".
+ */
+const recentlyDeletedCropIds = new Map<string, number>();
+
+/**
+ * Track crop IDs recently restored locally (within 60s).
+ * Prevents stale backend sync from re-adding them to trash.
+ */
 const recentlyRestoredCropIds = new Map<string, number>();
 
 export async function syncWithBackend(force = false): Promise<void> {
@@ -86,46 +99,59 @@ export async function syncWithBackend(force = false): Promise<void> {
 
     const [remoteActive, remoteTrash] = await Promise.all([
       api.getCrops().catch(() => null),
-      api.getDeletedCrops().catch(() => []),
+      api.getDeletedCrops().catch(() => [] as Crop[]),
     ]);
 
     if (Array.isArray(remoteActive)) {
       lastSyncTime = Date.now();
-      const activeWithFlags = remoteActive.map((c) => ({ ...c, isDeleted: false }));
-      const trashWithFlags = (remoteTrash || []).map((c) => ({ ...c, isDeleted: true }));
-      
-      const mergedMap = new Map<string, Crop>();
       const currentTime = Date.now();
+      const mergedMap = new Map<string, Crop>();
 
-      // 1. Preserve pending offline crops (c_...) and any locally active crops
+      // 1. Keep offline-only (temp ID) crops from local store
       globalCrops.forEach((c) => {
-        if (!c.id) return;
-        if (c.id.startsWith('c_')) {
-          mergedMap.set(c.id, c);
-        } else if (!c.isDeleted) {
-          // If crop is active locally (e.g. just restored), preserve it!
+        if (c.id && c.id.startsWith('c_')) {
           mergedMap.set(c.id, c);
         }
       });
 
-      // 2. Add remote trash, BUT do NOT overwrite any crop that was recently restored or is actively restored locally
+      // 2. Add remote active crops — EXCEPT those recently deleted locally (optimistic delete)
+      const activeWithFlags = remoteActive.map((c) => ({ ...c, isDeleted: false }));
+      activeWithFlags.forEach((c) => {
+        const deletedAt = recentlyDeletedCropIds.get(c.id);
+        const isRecentlyDeleted = Boolean(deletedAt && currentTime - deletedAt < 60_000);
+        if (isRecentlyDeleted) {
+          // Keep our local deleted state until backend confirms
+          const localCrop = globalCrops.find((lc) => lc.id === c.id);
+          if (localCrop) {
+            mergedMap.set(c.id, { ...localCrop, isDeleted: true });
+          }
+          return;
+        }
+        // Confirmed active on backend — clear restore guard
+        recentlyRestoredCropIds.delete(c.id);
+        mergedMap.set(c.id, c);
+      });
+
+      // 3. Add remote trash crops — EXCEPT those recently restored locally (optimistic restore)
+      const trashWithFlags = (remoteTrash || []).map((c) => ({ ...c, isDeleted: true }));
       trashWithFlags.forEach((c) => {
         const restoredAt = recentlyRestoredCropIds.get(c.id);
-        const isRecentlyRestored = Boolean(restoredAt && (currentTime - restoredAt < 60_000));
-        const isLocallyActive = mergedMap.has(c.id) && !mergedMap.get(c.id)!.isDeleted;
-
-        if (isRecentlyRestored || isLocallyActive) {
-          return; // Skip stale trash entry!
+        const isRecentlyRestored = Boolean(restoredAt && currentTime - restoredAt < 60_000);
+        if (isRecentlyRestored) {
+          // Keep our local restored state until backend confirms
+          const localCrop = globalCrops.find((lc) => lc.id === c.id);
+          if (localCrop) {
+            mergedMap.set(c.id, { ...localCrop, isDeleted: false, deletedAt: undefined });
+          }
+          return;
         }
-        mergedMap.set(c.id, c);
+        // Only add to trash if NOT already set as active by step 2
+        const existing = mergedMap.get(c.id);
+        if (!existing || existing.isDeleted !== false) {
+          mergedMap.set(c.id, c);
+        }
       });
 
-      // 3. Add remote active crops
-      activeWithFlags.forEach((c) => {
-        mergedMap.set(c.id, c);
-        recentlyRestoredCropIds.delete(c.id); // Confirmed on server
-      });
-      
       globalCrops = Array.from(mergedMap.values());
       persistCrops();
       globalError = null;
@@ -242,12 +268,16 @@ export function updateCrop(id: string, updates: Partial<Crop>) {
 
 /**
  * Soft delete: Marks crop as isDeleted=true and deletedAt=now
- * Preserves all original relations, expenses, sales, and notes
+ * Preserves all related Sales, Expenses, Bills, and Notes linked to the cropId.
+ * They are hidden from UI via getDeletedCropIds() filtering in expensesStore/salesStore.
  */
 export function deleteCrop(id: string) {
   const nowISO = new Date().toISOString();
+
+  // Track as recently deleted — prevents backend sync from re-adding as active for 60s
+  recentlyDeletedCropIds.set(id, Date.now());
   recentlyRestoredCropIds.delete(id);
-  
+
   // 1. Optimistic local soft-delete
   globalCrops = globalCrops.map((c) =>
     c.id === id ? { ...c, isDeleted: true, deletedAt: nowISO } : c
@@ -255,25 +285,31 @@ export function deleteCrop(id: string) {
   persistCrops();
   notifyCropsListeners();
 
-  // 2. Sync soft-delete to backend
-  api.deleteCrop(id).catch((err) => {
-    console.warn('Backend crop deletion deferred:', err?.message || err);
-  });
+  // 2. Sync soft-delete to backend — bypass throttle so trash is up-to-date
+  lastSyncTime = 0;
+  api.deleteCrop(id)
+    .then(() => {
+      // Backend confirmed — force re-sync to get accurate trash list
+      return syncWithBackend(true);
+    })
+    .catch((err) => {
+      console.warn('Backend crop deletion deferred:', err?.message || err);
+    });
 }
 
 /**
- * Restore: Marks crop as isDeleted=false and deletedAt=undefined
- * Restores crop record itself first and all its original data exactly as it was
+ * Restore: Marks crop as isDeleted=false and deletedAt=undefined.
+ * Backend re-links all expenses/sales/diary entries to this cropId.
+ * Forces a full re-sync of all stores after successful backend restore.
  */
 export async function restoreCrop(id: string): Promise<Crop | void> {
   // Flag as recently restored to protect against stale sync overwrites
   recentlyRestoredCropIds.set(id, Date.now());
+  recentlyDeletedCropIds.delete(id);
 
   // 1. Optimistic local restore
-  let found = false;
   globalCrops = globalCrops.map((c) => {
     if (c.id === id) {
-      found = true;
       return { ...c, isDeleted: false, deletedAt: undefined };
     }
     return c;
@@ -298,6 +334,11 @@ export async function restoreCrop(id: string): Promise<Crop | void> {
       }
       persistCrops();
       notifyCropsListeners();
+
+      // 3. Force full re-sync so expenses/sales stores update immediately
+      lastSyncTime = 0;
+      syncWithBackend(true).catch(() => {});
+
       return serverCrop;
     }
   } catch (err: any) {

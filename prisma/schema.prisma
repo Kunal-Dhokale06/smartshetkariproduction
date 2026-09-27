@@ -135,6 +135,11 @@ model Crop {
   status              CropStatus   @default(GROWING)
   iconName            String       @default("sprout")
   notes               String?      @db.Text
+
+  // Soft-delete fields – do NOT hard-delete crops; use isDeleted = true to move to Trash
+  isDeleted           Boolean      @default(false)
+  deletedAt           DateTime?    // Set when isDeleted=true, cleared on restore
+
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 
@@ -144,6 +149,7 @@ model Crop {
   budgets             Budget[]
 
   @@index([userId])
+  @@index([userId, isDeleted])
   @@index([userId, status])
   @@index([userId, season])
   @@index([name])

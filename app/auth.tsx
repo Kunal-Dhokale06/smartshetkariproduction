@@ -14,6 +14,7 @@ import {
   Dimensions,
   Modal,
   FlatList,
+  BackHandler,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -357,6 +358,19 @@ export default function AuthScreen() {
   const [villagePickerOpen, setVillagePickerOpen] = useState(false);
 
   const [formError, setFormError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const onBackPress = () => {
+      if (authMode === 'register') {
+        setAuthMode('login');
+        return true;
+      }
+      return false;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [authMode]);
 
   const curLang: AppLang = (language as AppLang) || 'mr';
 

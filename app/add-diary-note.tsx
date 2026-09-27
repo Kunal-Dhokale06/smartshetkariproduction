@@ -254,7 +254,7 @@ export default function AddDiaryNoteScreen() {
           <View style={styles.actionsRow}>
             <SecondaryButton
               title={t('cancel')}
-              onPress={() => router.back()}
+              onPress={handleClose}
               style={styles.actionCol}
             />
             <PrimaryButton

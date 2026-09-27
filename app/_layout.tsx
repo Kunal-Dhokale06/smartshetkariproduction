@@ -128,6 +128,13 @@ export default function RootLayout() {
                 presentation: 'card',
               }}
             />
+            <Stack.Screen
+              name="deleted-crops"
+              options={{
+                headerShown: false,
+                presentation: 'card',
+              }}
+            />
           </Stack>
         </AuthGate>
       </LanguageProvider>

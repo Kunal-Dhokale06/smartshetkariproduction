@@ -1,4 +1,4 @@
-import React, { useCallback, memo, useState } from 'react';
+import React, { useCallback, memo, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { ArrowLeft, RotateCcw, Trash2, Calendar, Maximize2, ShieldAlert } from 'lucide-react-native';
@@ -14,8 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { EmptyState } from '../components/ui/EmptyState';
 import { colors, spacing, fontSize, fontWeight, borderRadius } from '../theme';
 import { useCropsStore } from '../data/cropsStore';
-import { purgeExpensesForCrop } from '../data/expensesStore';
-import { purgeSalesForCrop } from '../data/salesStore';
+import { purgeExpensesForCrop, syncWithBackend as syncExpenses } from '../data/expensesStore';
+import { purgeSalesForCrop, syncWithBackend as syncSales } from '../data/salesStore';
 import { purgeDiaryNotesForCrop } from '../services/diaryStorage';
 import { Crop } from '../types';
 import { useLanguage, TranslationKey } from '../locales/languageContext';
@@ -137,6 +138,20 @@ export default function DeletedCropsScreen() {
     }, [refreshCrops])
   );
 
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const onBackPress = () => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/(tabs)/crops');
+      }
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
+
   const formatCropName = useCallback(
     (cropName?: string): string => {
       if (!cropName) return '';
@@ -151,6 +166,9 @@ export default function DeletedCropsScreen() {
     async (id: string, name: string) => {
       try {
         await restoreCrop(id);
+        // Force-sync expenses and sales so restored crop's data reappears immediately
+        syncExpenses(true).catch(() => {});
+        syncSales(true).catch(() => {});
         setActionNotice(`"${name}" ${t('cropRestored')}`);
         setTimeout(() => setActionNotice(null), 3500);
       } catch (err: any) {
