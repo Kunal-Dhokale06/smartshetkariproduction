@@ -10,7 +10,7 @@ import { useCropsStore } from '../../data/cropsStore';
 import { Crop, CropStatus } from '../../types';
 import { useLanguage, TranslationKey } from '../../locales/languageContext';
 import { getCropMeta } from '../../utils/cropIcons';
-import { confirmAction } from '../../utils';
+import { confirmAction, safeNavigate } from '../../utils';
 
 const FILTER_TABS: Array<'All' | CropStatus> = ['All', 'Growing', 'Harvested'];
 
@@ -111,7 +111,7 @@ export default function CropsScreen() {
     );
   }, [crops, selectedTab]);
 
-  const handleOpenAddCrop = useCallback(() => router.push('/add-crop'), [router]);
+  const handleOpenAddCrop = useCallback(() => safeNavigate(() => router.push('/add-crop')), [router]);
 
   const getFilterLabel = useCallback(
     (tab: 'All' | CropStatus): string => {
@@ -181,14 +181,14 @@ export default function CropsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={28} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('myCrops')}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <TouchableOpacity
             style={styles.trashIconButton}
-            onPress={() => router.push('/deleted-crops')}
+            onPress={() => safeNavigate(() => router.push('/deleted-crops'))}
             activeOpacity={0.7}
             accessibilityLabel={t('trash')}
           >

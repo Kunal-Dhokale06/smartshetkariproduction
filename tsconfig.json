@@ -11,7 +11,28 @@
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx"
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "data/**/*.ts",
+    "data/**/*.tsx",
+    "locales/**/*.ts",
+    "locales/**/*.tsx",
+    "services/**/*.ts",
+    "services/**/*.tsx",
+    "theme/**/*.ts",
+    "theme/**/*.tsx",
+    "types/**/*.ts",
+    "types/**/*.tsx",
+    "utils/**/*.ts",
+    "utils/**/*.tsx",
+    "*.ts",
+    "*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "backend",
+    "src"
   ]
 }

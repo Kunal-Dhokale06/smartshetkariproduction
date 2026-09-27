@@ -8,7 +8,7 @@ import { Card } from '../../components/ui/Card';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { colors, spacing, fontSize, fontWeight, borderRadius } from '../../theme';
 import { useExpensesStore } from '../../data/expensesStore';
-import { formatCurrency, confirmAction } from '../../utils';
+import { formatCurrency, confirmAction, safeNavigate } from '../../utils';
 import { useLanguage, TranslationKey } from '../../locales/languageContext';
 import { getCropMeta } from '../../utils/cropIcons';
 import { Expense } from '../../types';
@@ -92,7 +92,7 @@ export default function ExpensesScreen() {
   const { t } = useLanguage();
 
   const handleOpenAddExpense = useCallback(() => {
-    router.push('/add-expense');
+    safeNavigate(() => router.push('/add-expense'));
   }, [router]);
 
   const getCategoryLabel = useCallback(
@@ -179,7 +179,7 @@ export default function ExpensesScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={28} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('expenses')}</Text>

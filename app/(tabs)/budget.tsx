@@ -6,7 +6,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Card } from '../../components/ui/Card';
 import { colors, spacing, fontSize, fontWeight, borderRadius } from '../../theme';
-import { formatCurrency } from '../../utils';
+import { formatCurrency, safeNavigate } from '../../utils';
 import { useLanguage, TranslationKey } from '../../locales/languageContext';
 import { useExpensesStore } from '../../data/expensesStore';
 
@@ -104,7 +104,7 @@ export default function BudgetScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={24} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('budget')}</Text>

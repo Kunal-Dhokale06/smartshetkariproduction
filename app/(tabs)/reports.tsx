@@ -35,7 +35,7 @@ import { useCropsStore } from '../../data/cropsStore';
 import { useExpensesStore } from '../../data/expensesStore';
 import { useSalesStore } from '../../data/salesStore';
 import { getCropMeta } from '../../utils/cropIcons';
-import { formatCurrency } from '../../utils';
+import { formatCurrency, safeNavigate } from '../../utils';
 import { useAuth } from '../../data/authStore';
 import {
   ReportType,
@@ -377,7 +377,7 @@ export default function ReportsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={28} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('reports')}</Text>
@@ -623,7 +623,7 @@ export default function ReportsScreen() {
               <Text style={styles.emptyCropDesc}>{t('noCropsFoundDesc')}</Text>
               <TouchableOpacity
                 style={styles.addCropBtn}
-                onPress={() => router.push('/add-crop')}
+                onPress={() => safeNavigate(() => router.push('/add-crop'))}
               >
                 <Text style={styles.addCropBtnText}>+ {t('addCrop')}</Text>
               </TouchableOpacity>

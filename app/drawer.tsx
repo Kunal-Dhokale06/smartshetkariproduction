@@ -87,14 +87,13 @@ export default function DrawerMenuScreen() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      if (onComplete) {
-        onComplete();
+      if (router.canGoBack()) {
+        router.back();
       } else {
-        if (router.canGoBack()) {
-          router.back();
-        } else {
-          router.replace('/(tabs)');
-        }
+        router.replace('/(tabs)');
+      }
+      if (onComplete) {
+        setTimeout(onComplete, 60);
       }
     });
   };
@@ -142,7 +141,11 @@ export default function DrawerMenuScreen() {
       return;
     }
     closeDrawer(() => {
-      router.replace(route as any);
+      if (route === '/deleted-crops') {
+        router.push('/deleted-crops');
+      } else {
+        router.navigate(route as any);
+      }
     });
   };
 

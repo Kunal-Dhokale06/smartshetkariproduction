@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { useCropsStore } from '../../data/cropsStore';
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '../../theme';
 import { getCropMeta } from '../../utils/cropIcons';
+import { safeNavigate } from '../../utils';
 import { useLanguage, TranslationKey } from '../../locales/languageContext';
 
 interface CropDropdownProps {
@@ -48,7 +49,7 @@ export const CropDropdown: React.FC<CropDropdownProps> = ({
 
   const handleGoToAddCrop = () => {
     setOpen(false);
-    router.push('/add-crop');
+    safeNavigate(() => router.push('/add-crop'));
   };
 
   return (

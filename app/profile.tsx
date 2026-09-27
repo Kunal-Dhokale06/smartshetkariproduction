@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  BackHandler,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -45,6 +46,28 @@ export default function ProfileScreen() {
       .slice(0, 2);
   };
 
+  const handleBack = () => {
+    if (isEditing) {
+      setIsEditing(false);
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/settings');
+    }
+  };
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const onBackPress = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [isEditing, router]);
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -71,7 +94,7 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
       {/* Top Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.iconBtn} onPress={handleBack}>
           <ChevronLeft size={26} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('farmerProfile')}</Text>

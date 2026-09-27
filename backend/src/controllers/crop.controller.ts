@@ -135,6 +135,8 @@ export class CropController {
         status: formattedStatus,
         iconName: crop.iconName,
         notes: crop.notes,
+        isDeleted: crop.isDeleted,
+        deletedAt: crop.deletedAt ? crop.deletedAt.toISOString() : null,
         expenses: crop.expenses.map((e) => ({ ...e, amount: Number(e.amount) })),
         sales: crop.sales.map((s) => ({
           ...s,
@@ -409,6 +411,9 @@ const normalizedSeason = season && allowedSeasons.includes(season.toUpperCase())
   /**
    * Restore a soft-deleted crop from Trash
    * POST /api/v1/crops/:id/restore
+   * 
+   * Restores the crop and all its related data ONLY by cropId.
+   * Does NOT use name-matching to avoid cross-crop data contamination.
    */
   static async restore(req: AuthRequest, res: Response): Promise<any> {
     try {
@@ -420,84 +425,83 @@ const normalizedSeason = season && allowedSeasons.includes(season.toUpperCase())
       }
 
       const existing = await prisma.crop.findFirst({
-        where: { id, userId },
+        where: { id, userId, isDeleted: true },
       });
 
       if (!existing) {
-        return AppResponse.error(req, res, 'Crop not found or unauthorized', 404);
+        return AppResponse.error(req, res, 'Crop not found in Trash or unauthorized', 404);
       }
 
-      const restoredCrop = await prisma.crop.update({
-        where: { id },
-        data: {
-          isDeleted: false,
-          deletedAt: null,
-        },
+      // Restore crop + all related records in a single atomic transaction
+      const restoredCrop = await prisma.$transaction(async (tx) => {
+        // 1. Restore the crop itself
+        const crop = await tx.crop.update({
+          where: { id },
+          data: {
+            isDeleted: false,
+            deletedAt: null,
+          },
+        });
+
+        // 2. Re-link any expenses/sales/diary whose cropId matches this crop
+        //    (they keep their cropId intact — no name matching needed)
+        //    We also re-link any orphaned records (cropId=null) that match cropName exactly,
+        //    but ONLY if they have no other active crop with the same name.
+        const otherActiveCropWithSameName = await tx.crop.findFirst({
+          where: {
+            userId,
+            name: { equals: existing.name.trim(), mode: 'insensitive' },
+            isDeleted: false,
+            id: { not: id },
+          },
+        });
+
+        // Only do name-based orphan re-linking if no other active crop has the same name
+        const orphanNameClause = !otherActiveCropWithSameName
+          ? [{ cropId: null as string | null, cropName: { equals: existing.name.trim(), mode: 'insensitive' as const } }]
+          : [];
+
+        await Promise.all([
+          tx.expense.updateMany({
+            where: {
+              userId,
+              OR: [
+                { cropId: id },
+                ...orphanNameClause,
+              ],
+            },
+            data: { cropId: id },
+          }),
+          tx.sale.updateMany({
+            where: {
+              userId,
+              OR: [
+                { cropId: id },
+                ...orphanNameClause,
+              ],
+            },
+            data: { cropId: id },
+          }),
+          tx.diaryEntry.updateMany({
+            where: {
+              userId,
+              OR: [
+                { cropId: id },
+                ...orphanNameClause,
+              ],
+            },
+            data: { cropId: id },
+          }),
+        ]);
+
+        return crop;
       });
 
-      // Explicitly restore and re-link all related expenses, sales, and diary notes
-      await Promise.all([
-        prisma.expense.updateMany({
-          where: {
-            userId,
-            OR: [
-              { cropId: id },
-              { cropId: null, cropName: { equals: existing.name.trim(), mode: 'insensitive' } },
-            ],
-          },
-          data: { cropId: id },
-        }),
-        prisma.sale.updateMany({
-          where: {
-            userId,
-            OR: [
-              { cropId: id },
-              { cropId: null, cropName: { equals: existing.name.trim(), mode: 'insensitive' } },
-            ],
-          },
-          data: { cropId: id },
-        }),
-        prisma.diaryEntry.updateMany({
-          where: {
-            userId,
-            OR: [
-              { cropId: id },
-              { cropId: null, cropName: { equals: existing.name.trim(), mode: 'insensitive' } },
-            ],
-          },
-          data: { cropId: id },
-        }),
-      ]);
-
-      // Count restored related items for audit & verification
+      // Count restored related items for response
       const [expenseCount, saleCount, diaryCount] = await Promise.all([
-        prisma.expense.count({
-          where: {
-            userId,
-            OR: [
-              { cropId: id },
-              { cropName: { equals: existing.name.trim(), mode: 'insensitive' } },
-            ],
-          },
-        }),
-        prisma.sale.count({
-          where: {
-            userId,
-            OR: [
-              { cropId: id },
-              { cropName: { equals: existing.name.trim(), mode: 'insensitive' } },
-            ],
-          },
-        }),
-        prisma.diaryEntry.count({
-          where: {
-            userId,
-            OR: [
-              { cropId: id },
-              { cropName: { equals: existing.name.trim(), mode: 'insensitive' } },
-            ],
-          },
-        }),
+        prisma.expense.count({ where: { userId, cropId: id } }),
+        prisma.sale.count({ where: { userId, cropId: id } }),
+        prisma.diaryEntry.count({ where: { userId, cropId: id } }),
       ]);
 
       const formattedStatus = restoredCrop.status === 'GROWING' ? 'Growing' : restoredCrop.status === 'HARVESTED' ? 'Harvested' : restoredCrop.status;
@@ -507,6 +511,8 @@ const normalizedSeason = season && allowedSeasons.includes(season.toUpperCase())
         cropName: restoredCrop.name,
         variety: restoredCrop.variety,
         sowingDate: formatISODate(restoredCrop.sowingDate),
+        expectedHarvestDate: formatISODate(restoredCrop.expectedHarvestDate),
+        actualHarvestDate: formatISODate(restoredCrop.actualHarvestDate),
         area: `${Number(restoredCrop.area)} ${restoredCrop.areaUnit}`,
         areaNumeric: Number(restoredCrop.area),
         areaUnit: restoredCrop.areaUnit,

@@ -8,7 +8,7 @@ import { colors, spacing, fontSize, fontWeight, borderRadius } from '../../theme
 import { DiaryNote } from '../../types';
 import { getDiaryNotes, deleteDiaryNote, subscribeToDiary } from '../../services/diaryStorage';
 import { useLanguage, TranslationKey } from '../../locales/languageContext';
-import { confirmAction } from '../../utils';
+import { confirmAction, safeNavigate } from '../../utils';
 
 interface DiaryItemProps {
   note: DiaryNote;
@@ -142,15 +142,17 @@ export default function DiaryScreen() {
   }, []);
 
   const handleAddNote = useCallback(() => {
-    router.push('/add-diary-note');
+    safeNavigate(() => router.push('/add-diary-note'));
   }, [router]);
 
   const handleEditNote = useCallback(
     (noteId: string) => {
-      router.push({
-        pathname: '/add-diary-note',
-        params: { noteId },
-      });
+      safeNavigate(() =>
+        router.push({
+          pathname: '/add-diary-note',
+          params: { noteId },
+        })
+      );
     },
     [router]
   );
@@ -217,7 +219,7 @@ export default function DiaryScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={28} color={colors.primaryText} />
         </TouchableOpacity>
 

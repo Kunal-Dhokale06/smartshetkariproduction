@@ -18,6 +18,7 @@ import { voiceNoteService } from '../../services/voiceNoteService';
 import { api } from '../../services/api';
 import { useAuth } from '../../data/authStore';
 import { useCropsStore } from '../../data/cropsStore';
+import { safeNavigate } from '../../utils';
 
 interface ChatMessage {
   id: string;
@@ -128,7 +129,7 @@ export default function AIAssistantScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={24} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('aiAssistant')}</Text>

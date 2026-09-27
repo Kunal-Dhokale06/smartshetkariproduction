@@ -336,7 +336,7 @@ export default function AddCropScreen() {
           <View style={styles.actionsRow}>
             <SecondaryButton
               title={t('cancel')}
-              onPress={() => router.back()}
+              onPress={handleClose}
               style={styles.actionCol}
             />
             <PrimaryButton

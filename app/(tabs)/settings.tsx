@@ -22,6 +22,7 @@ import { INITIAL_USER } from '../../constants';
 import { useLanguage } from '../../locales/languageContext';
 import { useAuth } from '../../data/authStore';
 import { LanguageSelectorModal } from '../../components/LanguageSelectorModal';
+import { safeNavigate } from '../../utils';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -137,13 +138,13 @@ export default function SettingsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/drawer')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
           <Menu size={24} color={colors.primaryText} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{t('settings')}</Text>
 
-        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/profile')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/profile'))}>
           <User size={22} color={colors.primaryGreen} />
         </TouchableOpacity>
       </View>
@@ -153,7 +154,7 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Profile Card Header Link */}
-        <TouchableOpacity activeOpacity={0.8} onPress={() => router.push('/profile')}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => safeNavigate(() => router.push('/profile'))}>
           <Card style={styles.profileSummaryCard}>
             <View style={styles.avatarCircle}>
               <Sprout size={28} color={colors.primaryGreen} />

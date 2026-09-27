@@ -21,7 +21,7 @@ import { SecondaryButton } from '../components/ui/SecondaryButton';
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadows } from '../theme';
 import { addSale } from '../data/salesStore';
 import { useCropsStore } from '../data/cropsStore';
-import { formatCurrency } from '../utils';
+import { formatCurrency, safeNavigate } from '../utils';
 import { useLanguage } from '../locales/languageContext';
 
 function getTodayString(): string {
@@ -132,7 +132,7 @@ export default function AddSaleScreen() {
 
           <TouchableOpacity
             style={styles.addCropFirstBtn}
-            onPress={() => router.push('/add-crop')}
+            onPress={() => safeNavigate(() => router.push('/add-crop'))}
             activeOpacity={0.8}
           >
             <Plus size={20} color={colors.white} />
@@ -267,7 +267,7 @@ export default function AddSaleScreen() {
           <View style={styles.actionsRow}>
             <SecondaryButton
               title={t('cancel')}
-              onPress={() => router.back()}
+              onPress={handleClose}
               style={styles.btnHalf}
             />
             <PrimaryButton

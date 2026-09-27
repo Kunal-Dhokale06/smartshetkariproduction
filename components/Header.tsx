@@ -7,6 +7,8 @@ import { INITIAL_USER } from '../constants';
 import { useLanguage } from '../locales/languageContext';
 import { useAuth } from '../data/authStore';
 
+import { safeNavigate } from '../utils';
+
 interface HeaderProps {
   title?: string;
   subtitle?: string;
@@ -25,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({
   const farmerName = user?.name ? user.name.split(' ')[0] : 'Farmer';
 
   const handleOpenDrawer = () => {
-    router.push('/drawer');
+    safeNavigate(() => router.push('/drawer'));
   };
 
   return (

@@ -372,6 +372,8 @@ export class ExpenseController {
             gte: startOfYear,
             lte: endOfYear,
           },
+          // Exclude expenses belonging to soft-deleted crops
+          // (cropId=null means general farm expense — always include)
           OR: [
             { cropId: null },
             { crop: { isDeleted: false } },
