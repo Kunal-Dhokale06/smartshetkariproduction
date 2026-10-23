@@ -28,6 +28,8 @@ import {
   ChevronRight,
   LogOut,
   Trash2,
+  Receipt,
+  Store,
 } from 'lucide-react-native';
 import { useRouter, usePathname, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -129,17 +131,17 @@ export default function DrawerMenuScreen() {
   ).current;
 
   const menuItems = [
-    { labelKey: 'dashboard' as const, fallback: 'Dashboard', route: '/(tabs)', icon: LayoutDashboard },
-    { labelKey: 'myCrops' as const, fallback: 'My Crops', route: '/(tabs)/crops', icon: Sprout },
-    { labelKey: 'trash' as const, fallback: 'Trash / Deleted Crops', route: '/deleted-crops', icon: Trash2 },
-    { labelKey: 'expenses' as const, fallback: 'Expenses', route: '/(tabs)/expenses', icon: Banknote },
-    { labelKey: 'sales' as const, fallback: 'Sales', route: '/(tabs)/sales', icon: ShoppingCart },
-    { labelKey: 'analytics' as const, fallback: 'Analytics', route: '/(tabs)/analytics', icon: BarChart3 },
-    { labelKey: 'diary' as const, fallback: 'Diary', route: '/(tabs)/diary', icon: BookOpen },
-    { labelKey: 'budget' as const, fallback: 'Budget', route: '/(tabs)/budget', icon: ClipboardList },
-    { labelKey: 'aiAssistant' as const, fallback: 'AI Assistant', route: '/(tabs)/ai-assistant', icon: MessageSquare },
-    { labelKey: 'reports' as const, fallback: 'Reports', route: '/(tabs)/reports', icon: FileText },
-    { labelKey: 'settings' as const, fallback: 'Settings', route: '/(tabs)/settings', icon: Settings },
+    { labelKey: 'dashboard' as const, fallback: 'Dashboard', route: '/(tabs)', icon: LayoutDashboard, color: '#16A34A', bg: '#DCFCE7' },
+    { labelKey: 'myCrops' as const, fallback: 'My Crops', route: '/(tabs)/crops', icon: Sprout, color: '#16A34A', bg: '#DCFCE7' },
+    { labelKey: 'trash' as const, fallback: 'Trash / Deleted Crops', route: '/deleted-crops', icon: Trash2, color: '#E11D48', bg: '#FFE4E6' },
+    { labelKey: 'expenses' as const, fallback: 'Expenses', route: '/(tabs)/expenses', icon: Receipt, color: '#EA580C', bg: '#FFEDD5' },
+    { labelKey: 'sales' as const, fallback: 'Sales', route: '/(tabs)/sales', icon: Store, color: '#0284C7', bg: '#E0F2FE' },
+    { labelKey: 'analytics' as const, fallback: 'Analytics', route: '/(tabs)/analytics', icon: BarChart3, color: '#2563EB', bg: '#DBEAFE' },
+    { labelKey: 'diary' as const, fallback: 'Diary', route: '/(tabs)/diary', icon: BookOpen, color: '#9333EA', bg: '#F3E8FF' },
+    { labelKey: 'budget' as const, fallback: 'Budget', route: '/(tabs)/budget', icon: ClipboardList, color: '#7E22CE', bg: '#F3E8FF' },
+    { labelKey: 'aiAssistant' as const, fallback: 'AI Assistant', route: '/(tabs)/ai-assistant', icon: MessageSquare, color: '#059669', bg: '#D1FAE5' },
+    { labelKey: 'reports' as const, fallback: 'Reports', route: '/(tabs)/reports', icon: FileText, color: '#0284C7', bg: '#E0F2FE' },
+    { labelKey: 'settings' as const, fallback: 'Settings', route: '/(tabs)/settings', icon: Settings, color: '#475569', bg: '#F1F5F9' },
   ];
 
   const handleNavigate = (route: string) => {
@@ -286,10 +288,10 @@ export default function DrawerMenuScreen() {
                   onPress={() => handleNavigate(item.route)}
                   activeOpacity={0.75}
                 >
-                  <View style={[styles.menuIconBox, isActive && styles.activeMenuIconBox]}>
+                  <View style={[styles.menuIconBox, { backgroundColor: item.bg }]}>
                     <Icon
                       size={24}
-                      color={isActive ? colors.primaryGreen : colors.primaryText}
+                      color={item.color}
                     />
                   </View>
                   <Text

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Sprout, Banknote, ShoppingCart, ClipboardList, TrendingDown, TrendingUp } from 'lucide-react-native';
+import { Sprout, Banknote, ShoppingCart, ClipboardList, TrendingDown, TrendingUp, Receipt, Store } from 'lucide-react-native';
 import { Header } from '../../components/Header';
 import { WeatherCard } from '../../components/WeatherCard';
 import { AIBanner } from '../../components/AIBanner';
@@ -54,8 +54,8 @@ export default function DashboardScreen() {
               onPress={() => safeNavigate(() => router.push('/add-crop'))}
               activeOpacity={0.8}
             >
-              <View style={[styles.quickActionIconBg, { backgroundColor: '#F0FDF4' }]}>
-                <Sprout size={32} color={colors.primaryGreen} />
+              <View style={[styles.quickActionIconBg, { backgroundColor: '#DCFCE7' }]}>
+                <Sprout size={32} color="#16A34A" />
               </View>
               <Text style={styles.quickActionLabel} numberOfLines={1}>
                 {t('addCrop')}
@@ -67,8 +67,8 @@ export default function DashboardScreen() {
               onPress={() => safeNavigate(() => router.push('/add-expense'))}
               activeOpacity={0.8}
             >
-              <View style={[styles.quickActionIconBg, { backgroundColor: '#FEF3C7' }]}>
-                <Banknote size={32} color="#D97706" />
+              <View style={[styles.quickActionIconBg, { backgroundColor: '#FFEDD5' }]}>
+                <Receipt size={32} color="#EA580C" />
               </View>
               <Text style={styles.quickActionLabel} numberOfLines={1}>
                 {t('expenses')}
@@ -81,7 +81,7 @@ export default function DashboardScreen() {
               activeOpacity={0.8}
             >
               <View style={[styles.quickActionIconBg, { backgroundColor: '#E0F2FE' }]}>
-                <ShoppingCart size={32} color="#0284C7" />
+                <Store size={32} color="#0284C7" />
               </View>
               <Text style={styles.quickActionLabel} numberOfLines={1}>
                 {t('sales')}
@@ -94,7 +94,7 @@ export default function DashboardScreen() {
               activeOpacity={0.8}
             >
               <View style={[styles.quickActionIconBg, { backgroundColor: '#F3E8FF' }]}>
-                <ClipboardList size={32} color="#7E22CE" />
+                <ClipboardList size={32} color="#9333EA" />
               </View>
               <Text style={styles.quickActionLabel} numberOfLines={1}>
                 {t('budget')}
@@ -118,8 +118,8 @@ export default function DashboardScreen() {
                   <Text style={styles.overviewLabel} numberOfLines={1}>
                     {t('totalExpenses')}
                   </Text>
-                  <View style={[styles.cardIconCircle, { backgroundColor: '#FEF3C7' }]}>
-                    <Banknote size={20} color="#D97706" />
+                  <View style={[styles.cardIconCircle, { backgroundColor: '#FFEDD5' }]}>
+                    <Receipt size={20} color="#EA580C" />
                   </View>
                 </View>
                 <Text style={styles.overviewValue}>
@@ -149,7 +149,7 @@ export default function DashboardScreen() {
                     {t('totalSales')}
                   </Text>
                   <View style={[styles.cardIconCircle, { backgroundColor: '#E0F2FE' }]}>
-                    <ShoppingCart size={20} color="#0284C7" />
+                    <Store size={20} color="#0284C7" />
                   </View>
                 </View>
                 <Text style={styles.overviewValue}>
@@ -178,8 +178,8 @@ export default function DashboardScreen() {
                   <Text style={styles.overviewLabel} numberOfLines={1}>
                     {t('activeCrops')}
                   </Text>
-                  <View style={[styles.cardIconCircle, { backgroundColor: '#F0FDF4' }]}>
-                    <Sprout size={20} color={colors.primaryGreen} />
+                  <View style={[styles.cardIconCircle, { backgroundColor: '#DCFCE7' }]}>
+                    <Sprout size={20} color="#16A34A" />
                   </View>
                 </View>
                 <Text style={styles.overviewValue}>{activeCropsCount}</Text>
@@ -199,7 +199,7 @@ export default function DashboardScreen() {
                     {t('estimatedProfit')}
                   </Text>
                   <View style={[styles.cardIconCircle, { backgroundColor: '#DCFCE7' }]}>
-                    <Banknote size={20} color={colors.primaryGreen} />
+                    <TrendingUp size={20} color="#16A34A" />
                   </View>
                 </View>
                 <Text style={[styles.overviewValue, { color: isProfitPositive ? colors.primaryGreen : colors.danger }]}>

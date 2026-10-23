@@ -69,11 +69,13 @@ export const BottomBar: React.FC = () => {
         onPress={() => handleNavigate('/(tabs)')}
         activeOpacity={0.75}
       >
-        <Home size={22} color={isHomeActive ? colors.primaryGreen : colors.secondaryText} />
-        <Text style={[styles.tabLabel, isHomeActive && styles.activeTabLabel]} numberOfLines={1}>
+        <View style={[styles.tabIconBox, isHomeActive && { backgroundColor: '#DCFCE7' }]}>
+          <Home size={22} color={isHomeActive ? '#16A34A' : colors.secondaryText} />
+        </View>
+        <Text style={[styles.tabLabel, isHomeActive && { color: '#16A34A', fontWeight: fontWeight.bold }]} numberOfLines={1}>
           {t('home')}
         </Text>
-        {isHomeActive && <View style={styles.activeDot} />}
+        {isHomeActive && <View style={[styles.activeDot, { backgroundColor: '#16A34A' }]} />}
       </TouchableOpacity>
 
       {/* Crops Tab */}
@@ -82,11 +84,13 @@ export const BottomBar: React.FC = () => {
         onPress={() => handleNavigate('/(tabs)/crops')}
         activeOpacity={0.75}
       >
-        <Sprout size={22} color={isCropsActive ? colors.primaryGreen : colors.secondaryText} />
-        <Text style={[styles.tabLabel, isCropsActive && styles.activeTabLabel]} numberOfLines={1}>
+        <View style={[styles.tabIconBox, isCropsActive && { backgroundColor: '#DCFCE7' }]}>
+          <Sprout size={22} color={isCropsActive ? '#16A34A' : colors.secondaryText} />
+        </View>
+        <Text style={[styles.tabLabel, isCropsActive && { color: '#16A34A', fontWeight: fontWeight.bold }]} numberOfLines={1}>
           {t('crops')}
         </Text>
-        {isCropsActive && <View style={styles.activeDot} />}
+        {isCropsActive && <View style={[styles.activeDot, { backgroundColor: '#16A34A' }]} />}
       </TouchableOpacity>
 
       {/* Primary Floating Center Camera Button */}
@@ -105,17 +109,19 @@ export const BottomBar: React.FC = () => {
         </Animated.View>
       </View>
 
-      {/* Diary Tab */}
+      {/* Diary Tab (Purple for records) */}
       <TouchableOpacity
         style={styles.tabItem}
         onPress={() => handleNavigate('/(tabs)/diary')}
         activeOpacity={0.75}
       >
-        <BookOpen size={22} color={isDiaryActive ? colors.primaryGreen : colors.secondaryText} />
-        <Text style={[styles.tabLabel, isDiaryActive && styles.activeTabLabel]} numberOfLines={1}>
+        <View style={[styles.tabIconBox, isDiaryActive && { backgroundColor: '#F3E8FF' }]}>
+          <BookOpen size={22} color={isDiaryActive ? '#9333EA' : colors.secondaryText} />
+        </View>
+        <Text style={[styles.tabLabel, isDiaryActive && { color: '#9333EA', fontWeight: fontWeight.bold }]} numberOfLines={1}>
           {t('diary')}
         </Text>
-        {isDiaryActive && <View style={styles.activeDot} />}
+        {isDiaryActive && <View style={[styles.activeDot, { backgroundColor: '#9333EA' }]} />}
       </TouchableOpacity>
 
       {/* Reports Tab */}
@@ -124,11 +130,13 @@ export const BottomBar: React.FC = () => {
         onPress={() => handleNavigate('/(tabs)/reports')}
         activeOpacity={0.75}
       >
-        <FileText size={22} color={isReportsActive ? colors.primaryGreen : colors.secondaryText} />
-        <Text style={[styles.tabLabel, isReportsActive && styles.activeTabLabel]} numberOfLines={1}>
+        <View style={[styles.tabIconBox, isReportsActive && { backgroundColor: '#E0F2FE' }]}>
+          <FileText size={22} color={isReportsActive ? '#0284C7' : colors.secondaryText} />
+        </View>
+        <Text style={[styles.tabLabel, isReportsActive && { color: '#0284C7', fontWeight: fontWeight.bold }]} numberOfLines={1}>
           {t('reports')}
         </Text>
-        {isReportsActive && <View style={styles.activeDot} />}
+        {isReportsActive && <View style={[styles.activeDot, { backgroundColor: '#0284C7' }]} />}
       </TouchableOpacity>
     </View>
   );
@@ -152,6 +160,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: '100%',
     position: 'relative',
+  },
+  tabIconBox: {
+    width: 36,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   tabLabel: {
     fontSize: fontSize.xs - 1,

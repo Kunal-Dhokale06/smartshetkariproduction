@@ -150,7 +150,7 @@ export default function AnalyticsScreen() {
 
         {/* 4 Summary Metric Cards (2x2 Grid) */}
         <View style={styles.metricsGrid}>
-          {/* Revenue */}
+          {/* Revenue (Blue for sales) */}
           <Card style={styles.metricCard}>
             <View style={styles.cardHeaderRow}>
               <Text style={styles.metricLabel}>{t('revenue')}</Text>
@@ -162,38 +162,38 @@ export default function AnalyticsScreen() {
             <Text style={styles.metricSubText}>+12% {t('vsLastMonth')}</Text>
           </Card>
 
-          {/* Expenses */}
+          {/* Expenses (Orange for expenses) */}
           <Card style={styles.metricCard}>
             <View style={styles.cardHeaderRow}>
               <Text style={styles.metricLabel}>{t('expenses')}</Text>
-              <View style={[styles.iconCircle, { backgroundColor: '#FEF3C7' }]}>
-                <TrendingDown size={16} color="#D97706" />
+              <View style={[styles.iconCircle, { backgroundColor: '#FFEDD5' }]}>
+                <TrendingDown size={16} color="#EA580C" />
               </View>
             </View>
             <Text style={styles.metricValue}>{formatCurrency(displayExpenses)}</Text>
             <Text style={styles.metricSubText}>-8% {t('vsLastMonth')}</Text>
           </Card>
 
-          {/* Net Profit */}
+          {/* Net Profit (Green for profit) */}
           <Card style={styles.metricCard}>
             <View style={styles.cardHeaderRow}>
               <Text style={styles.metricLabel}>{t('netProfit')}</Text>
-              <View style={[styles.iconCircle, { backgroundColor: colors.lightGreen }]}>
-                <DollarSign size={16} color={colors.primaryGreen} />
+              <View style={[styles.iconCircle, { backgroundColor: '#DCFCE7' }]}>
+                <TrendingUp size={16} color="#16A34A" />
               </View>
             </View>
-            <Text style={[styles.metricValue, { color: colors.primaryGreen }]}>
+            <Text style={[styles.metricValue, { color: '#16A34A' }]}>
               {formatCurrency(displayProfit)}
             </Text>
             <Text style={styles.metricSubText}>+15% {t('vsLastMonth')}</Text>
           </Card>
 
-          {/* Profit Margin */}
+          {/* Profit Margin (Purple for records) */}
           <Card style={styles.metricCard}>
             <View style={styles.cardHeaderRow}>
               <Text style={styles.metricLabel}>{t('profitMargin')}</Text>
               <View style={[styles.iconCircle, { backgroundColor: '#F3E8FF' }]}>
-                <PieChart size={16} color="#7E22CE" />
+                <PieChart size={16} color="#9333EA" />
               </View>
             </View>
             <Text style={styles.metricValue}>{marginPercentage}%</Text>

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, ShoppingCart, TrendingUp, Sprout, Plus } from 'lucide-react-native';
+import { X, ShoppingCart, TrendingUp, Sprout, Plus, Store } from 'lucide-react-native';
 import { Input } from '../components/ui/Input';
 import { CropDropdown } from '../components/ui/CropDropdown';
 import { UnitDropdown } from '../components/ui/UnitDropdown';
@@ -165,8 +165,8 @@ export default function AddSaleScreen() {
         >
           {/* Form Hero */}
           <View style={styles.formHero}>
-            <View style={styles.heroIconCircle}>
-              <ShoppingCart size={32} color={colors.primaryGreen} />
+            <View style={[styles.heroIconCircle, { backgroundColor: '#E0F2FE' }]}>
+              <Store size={32} color="#0284C7" />
             </View>
             <Text style={styles.heroTitle}>{t('recordMarketSale')}</Text>
             <Text style={styles.heroSubtitle}>{t('recordMarketSaleSubtitle')}</Text>

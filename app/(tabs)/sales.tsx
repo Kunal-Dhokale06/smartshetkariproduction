@@ -150,15 +150,15 @@ export default function SalesScreen() {
               <Text style={styles.summaryLabel}>{t('totalSales')}</Text>
               <Text style={styles.summaryAmount}>{formatCurrency(totalSalesAmount)}</Text>
             </View>
-            <View style={styles.iconCircle}>
-              <ShoppingCart size={32} color={colors.primaryGreen} />
+            <View style={[styles.iconCircle, { backgroundColor: '#E0F2FE' }]}>
+              <Store size={32} color="#0284C7" />
             </View>
           </View>
           <View style={styles.summaryBadgeRow}>
             <Text style={styles.periodText}>{t('thisMonth')}</Text>
             <View style={styles.trendBadge}>
-              <TrendingUp size={16} color={colors.primaryGreen} />
-              <Text style={styles.trendText}>+12% {t('vsLastMonth')}</Text>
+              <TrendingUp size={16} color="#0284C7" />
+              <Text style={[styles.trendText, { color: '#0284C7' }]}>+12% {t('vsLastMonth')}</Text>
             </View>
           </View>
         </Card>
@@ -176,7 +176,7 @@ export default function SalesScreen() {
         description={t('salesEmptyDescription')}
         actionTitle={`+ ${t('addSale')}`}
         onActionPress={handleOpenAddSale}
-        icon={<ShoppingCart size={48} color={colors.primaryGreen} />}
+        icon={<Store size={48} color="#0284C7" />}
       />
     ),
     [t, handleOpenAddSale]

@@ -14,6 +14,8 @@ import {
   Flame,
   Droplets,
   CircleDot,
+  Grape,
+  Citrus,
 } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 
@@ -27,12 +29,12 @@ export interface CropMeta {
 export function getCropMeta(cropName?: string | null): CropMeta {
   const lower = (cropName || '').trim().toLowerCase();
 
-  // Cereals & Grains
+  // Cereals & Grains (Golden amber with soft warm background)
   if (lower.includes('wheat') || lower.includes('गहू') || lower.includes('गेहूं')) {
     return { name: 'Wheat', icon: Wheat, color: '#D97706', bg: '#FEF3C7' };
   }
   if (lower.includes('paddy') || lower.includes('rice') || lower.includes('भात') || lower.includes('धान')) {
-    return { name: 'Paddy', icon: Wheat, color: '#B45309', bg: '#FEF3C7' };
+    return { name: 'Paddy', icon: Wheat, color: '#16A34A', bg: '#DCFCE7' };
   }
   if (lower.includes('maize') || lower.includes('corn') || lower.includes('मका') || lower.includes('मक्का')) {
     return { name: 'Maize', icon: Wheat, color: '#CA8A04', bg: '#FEF9C3' };
@@ -47,12 +49,12 @@ export function getCropMeta(cropName?: string | null): CropMeta {
     return { name: 'Ragi', icon: Wheat, color: '#78350F', bg: '#FFEDD5' };
   }
 
-  // Commercial & Cash
+  // Commercial & Cash Crops
   if (lower.includes('cotton') || lower.includes('कापूस') || lower.includes('कपास')) {
     return { name: 'Cotton', icon: Flower2, color: '#0284C7', bg: '#E0F2FE' };
   }
   if (lower.includes('sugar') || lower.includes('cane') || lower.includes('ऊस') || lower.includes('गन्ना')) {
-    return { name: 'Sugarcane', icon: TreeDeciduous, color: '#008A45', bg: '#EAF7EF' };
+    return { name: 'Sugarcane', icon: TreeDeciduous, color: '#16A34A', bg: '#DCFCE7' };
   }
   if (lower.includes('turmeric') || lower.includes('हळद') || lower.includes('हल्दी')) {
     return { name: 'Turmeric', icon: Leaf, color: '#D97706', bg: '#FEF3C7' };
@@ -64,7 +66,7 @@ export function getCropMeta(cropName?: string | null): CropMeta {
     return { name: 'Tobacco', icon: Leaf, color: '#854D0E', bg: '#FEF3C7' };
   }
 
-  // Pulses & Legumes
+  // Pulses & Legumes (Rich green with soft green background)
   if (lower.includes('soy') || lower.includes('सोयाबीन')) {
     return { name: 'Soybean', icon: Leaf, color: '#059669', bg: '#D1FAE5' };
   }
@@ -98,7 +100,7 @@ export function getCropMeta(cropName?: string | null): CropMeta {
     return { name: 'Tomato', icon: Apple, color: '#DC2626', bg: '#FEE2E2' };
   }
   if (lower.includes('onion') || lower.includes('कांदा') || lower.includes('प्याज')) {
-    return { name: 'Onion', icon: Sparkles, color: '#7E22CE', bg: '#F3E8FF' };
+    return { name: 'Onion', icon: CircleDot, color: '#7E22CE', bg: '#F3E8FF' };
   }
   if (lower.includes('potato') || lower.includes('बटाटा') || lower.includes('आलू')) {
     return { name: 'Potato', icon: Package, color: '#854D0E', bg: '#FEF3C7' };
@@ -110,7 +112,7 @@ export function getCropMeta(cropName?: string | null): CropMeta {
     return { name: 'Chilli', icon: Flame, color: '#E11D48', bg: '#FFE4E6' };
   }
   if (lower.includes('brinjal') || lower.includes('eggplant') || lower.includes('वांगी') || lower.includes('बैंगन')) {
-    return { name: 'Brinjal', icon: Sparkles, color: '#6B21A8', bg: '#F3E8FF' };
+    return { name: 'Brinjal', icon: CircleDot, color: '#6B21A8', bg: '#F3E8FF' };
   }
   if (lower.includes('cabbage') || lower.includes('कोबी') || lower.includes('पत्तागोभी')) {
     return { name: 'Cabbage', icon: Leaf, color: '#16A34A', bg: '#DCFCE7' };
@@ -148,13 +150,13 @@ export function getCropMeta(cropName?: string | null): CropMeta {
     return { name: 'Mango', icon: Apple, color: '#EA580C', bg: '#FFEDD5' };
   }
   if (lower.includes('grapes') || lower.includes('द्राक्षे') || lower.includes('अंगूर')) {
-    return { name: 'Grapes', icon: Sparkles, color: '#7C3AED', bg: '#EDE9FE' };
+    return { name: 'Grapes', icon: Grape, color: '#7C3AED', bg: '#EDE9FE' };
   }
   if (lower.includes('orange') || lower.includes('santra') || lower.includes('संत्रे') || lower.includes('संतरा')) {
-    return { name: 'Orange', icon: Sun, color: '#EA580C', bg: '#FFEDD5' };
+    return { name: 'Orange', icon: Citrus, color: '#EA580C', bg: '#FFEDD5' };
   }
   if (lower.includes('sweetlime') || lower.includes('mosambi') || lower.includes('मोसंबी') || lower.includes('मौसमी')) {
-    return { name: 'Sweet Lime', icon: Sun, color: '#65A30D', bg: '#ECFCCB' };
+    return { name: 'Sweet Lime', icon: Citrus, color: '#65A30D', bg: '#ECFCCB' };
   }
   if (lower.includes('papaya') || lower.includes('पपई') || lower.includes('पपीता')) {
     return { name: 'Papaya', icon: Apple, color: '#F97316', bg: '#FFEDD5' };
@@ -172,8 +174,8 @@ export function getCropMeta(cropName?: string | null): CropMeta {
     return { name: 'Dragon Fruit', icon: Sparkles, color: '#DB2777', bg: '#FCE7F3' };
   }
 
-  // General / Default
-  return { name: cropName || 'Crop', icon: Sprout, color: colors.primaryGreen, bg: '#EAF7EF' };
+  // General / Default Crop (Soft green theme)
+  return { name: cropName || 'Crop', icon: Sprout, color: '#16A34A', bg: '#DCFCE7' };
 }
 
 export function renderCropVectorIcon(cropName: string, iconSize = 22, boxSize = 44) {

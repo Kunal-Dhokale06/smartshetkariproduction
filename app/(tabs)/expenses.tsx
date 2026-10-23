@@ -1,7 +1,7 @@
 import React, { useCallback, memo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
 import {
-  Menu, Plus, Package, Sprout, ShieldAlert, Users, Droplets, Banknote, TrendingDown, Trash2,
+  Menu, Plus, Package, Sprout, ShieldAlert, Users, Droplets, Banknote, TrendingDown, Trash2, Receipt,
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Card } from '../../components/ui/Card';
@@ -14,12 +14,12 @@ import { getCropMeta } from '../../utils/cropIcons';
 import { Expense } from '../../types';
 
 const CATEGORY_META: Record<string, { icon: any; color: string; bg: string }> = {
-  Fertilizer: { icon: Package,     color: colors.primaryGreen, bg: '#EAF7EF' },
-  Seeds:      { icon: Sprout,      color: '#0284C7',           bg: '#E0F2FE' },
-  Pesticide:  { icon: ShieldAlert, color: '#D97706',           bg: '#FEF3C7' },
-  Labor:      { icon: Users,       color: '#7E22CE',           bg: '#F3E8FF' },
-  Irrigation: { icon: Droplets,    color: '#2563EB',           bg: '#EFF6FF' },
-  Other:      { icon: Banknote,    color: '#6B7280',           bg: '#F3F4F6' },
+  Fertilizer: { icon: Package,     color: '#EA580C', bg: '#FFEDD5' },
+  Seeds:      { icon: Sprout,      color: '#16A34A', bg: '#DCFCE7' },
+  Pesticide:  { icon: ShieldAlert, color: '#D97706', bg: '#FEF3C7' },
+  Labor:      { icon: Users,       color: '#EA580C', bg: '#FFEDD5' },
+  Irrigation: { icon: Droplets,    color: '#0284C7', bg: '#E0F2FE' },
+  Other:      { icon: Receipt,     color: '#6B7280', bg: '#F3F4F6' },
 };
 
 interface ExpenseItemProps {

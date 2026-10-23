@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import {
-  Menu, ClipboardList, PieChart, Banknote, ShieldAlert, Users, Sprout,
+  Menu, ClipboardList, PieChart, Banknote, ShieldAlert, Users, Sprout, Tractor, Package,
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Card } from '../../components/ui/Card';
@@ -61,9 +61,9 @@ export default function BudgetScreen() {
         titleKey: 'fertilizersAndChemicals' as TranslationKey,
         allocated: 25000,
         spent: fertilizerSpent,
-        icon: Banknote,
-        color: colors.primaryGreen,
-        bgColor: '#EAF7EF',
+        icon: Package,
+        color: '#EA580C',
+        bgColor: '#FFEDD5',
       },
       {
         id: 'b2',
@@ -71,8 +71,8 @@ export default function BudgetScreen() {
         allocated: 12000,
         spent: seedsSpent,
         icon: Sprout,
-        color: '#0284C7',
-        bgColor: '#E0F2FE',
+        color: '#16A34A',
+        bgColor: '#DCFCE7',
       },
       {
         id: 'b3',
@@ -80,17 +80,17 @@ export default function BudgetScreen() {
         allocated: 15000,
         spent: laborSpent,
         icon: Users,
-        color: '#7E22CE',
-        bgColor: '#F3E8FF',
+        color: '#EA580C',
+        bgColor: '#FFEDD5',
       },
       {
         id: 'b4',
         titleKey: 'machineryAndIrrigation' as TranslationKey,
         allocated: 8000,
         spent: irrigationSpent,
-        icon: ShieldAlert,
-        color: '#D97706',
-        bgColor: '#FEF3C7',
+        icon: Tractor,
+        color: '#0284C7',
+        bgColor: '#E0F2FE',
       },
     ],
     [fertilizerSpent, seedsSpent, laborSpent, irrigationSpent]

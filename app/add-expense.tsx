@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Banknote, Camera, Package, Sprout, ShieldAlert, Users, Droplets, CheckCircle2, AlertCircle, Plus } from 'lucide-react-native';
+import { X, Banknote, Camera, Package, Sprout, ShieldAlert, Users, Droplets, CheckCircle2, AlertCircle, Plus, Receipt } from 'lucide-react-native';
 import { Input } from '../components/ui/Input';
 import { CropDropdown } from '../components/ui/CropDropdown';
 import { DateField } from '../components/ui/DateField';
@@ -26,12 +26,12 @@ import { safeNavigate } from '../utils';
 type Category = 'Fertilizer' | 'Seeds' | 'Pesticide' | 'Labor' | 'Irrigation' | 'Other';
 
 const CATEGORIES: { key: Category; icon: any; color: string; bg: string }[] = [
-  { key: 'Fertilizer', icon: Package, color: colors.primaryGreen, bg: '#EAF7EF' },
-  { key: 'Seeds', icon: Sprout, color: '#0284C7', bg: '#E0F2FE' },
-  { key: 'Pesticide', icon: ShieldAlert, color: '#D97706', bg: '#FEF3C7' },
-  { key: 'Labor', icon: Users, color: '#7E22CE', bg: '#F3E8FF' },
-  { key: 'Irrigation', icon: Droplets, color: '#2563EB', bg: '#EFF6FF' },
-  { key: 'Other', icon: Banknote, color: '#6B7280', bg: '#F3F4F6' },
+  { key: 'Fertilizer', icon: Package,     color: '#EA580C', bg: '#FFEDD5' },
+  { key: 'Seeds',      icon: Sprout,      color: '#16A34A', bg: '#DCFCE7' },
+  { key: 'Pesticide',  icon: ShieldAlert, color: '#D97706', bg: '#FEF3C7' },
+  { key: 'Labor',      icon: Users,       color: '#EA580C', bg: '#FFEDD5' },
+  { key: 'Irrigation', icon: Droplets,    color: '#0284C7', bg: '#E0F2FE' },
+  { key: 'Other',      icon: Receipt,     color: '#6B7280', bg: '#F3F4F6' },
 ];
 
 function getTodayString(): string {

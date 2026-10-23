@@ -70,6 +70,8 @@ export default function SettingsScreen() {
       title: t('account'),
       subtitle: t('accountSubtitle'),
       icon: User,
+      color: '#16A34A',
+      bg: '#DCFCE7',
       action: () => router.push('/profile'),
     },
     {
@@ -77,6 +79,8 @@ export default function SettingsScreen() {
       title: t('language'),
       subtitle: language === 'mr' ? 'मराठी (Marathi)' : language === 'hi' ? 'हिन्दी (Hindi)' : 'English',
       icon: Globe,
+      color: '#0284C7',
+      bg: '#E0F2FE',
       action: () => setLangModalVisible(true),
     },
     {
@@ -84,6 +88,8 @@ export default function SettingsScreen() {
       title: t('notifications'),
       subtitle: notificationsEnabled ? t('notificationsSubtitleEnabled') : t('notificationsSubtitleDisabled'),
       icon: Bell,
+      color: '#D97706',
+      bg: '#FEF3C7',
       isToggle: true,
       toggleValue: notificationsEnabled,
       onToggle: setNotificationsEnabled,
@@ -93,6 +99,8 @@ export default function SettingsScreen() {
       title: t('theme'),
       subtitle: t('themeSubtitle'),
       icon: Palette,
+      color: '#7E22CE',
+      bg: '#F3E8FF',
       action: () => handleRowPress(t('theme'), t('themeSubtitle')),
     },
     {
@@ -100,6 +108,8 @@ export default function SettingsScreen() {
       title: t('privacy'),
       subtitle: t('privacySubtitle'),
       icon: ShieldCheck,
+      color: '#059669',
+      bg: '#D1FAE5',
       action: () => handleRowPress(t('privacy'), t('privacySubtitle')),
     },
     {
@@ -107,6 +117,8 @@ export default function SettingsScreen() {
       title: t('currency'),
       subtitle: t('currencySubtitle'),
       icon: Banknote,
+      color: '#16A34A',
+      bg: '#DCFCE7',
       action: () => handleRowPress(t('currency'), t('currencySubtitle')),
     },
     {
@@ -114,6 +126,8 @@ export default function SettingsScreen() {
       title: t('units'),
       subtitle: t('unitsSubtitle'),
       icon: Scale,
+      color: '#9333EA',
+      bg: '#F3E8FF',
       action: () => handleRowPress(t('units'), t('unitsSubtitle')),
     },
     {
@@ -121,6 +135,8 @@ export default function SettingsScreen() {
       title: t('helpSupport'),
       subtitle: t('helpSubtitle'),
       icon: HelpCircle,
+      color: '#0284C7',
+      bg: '#E0F2FE',
       action: () => handleRowPress(t('helpSupport'), t('helpSubtitle')),
     },
     {
@@ -128,6 +144,8 @@ export default function SettingsScreen() {
       title: t('aboutApp'),
       subtitle: t('aboutSubtitle'),
       icon: Info,
+      color: '#475569',
+      bg: '#F1F5F9',
       action: () => handleRowPress(t('aboutApp'), t('aboutSubtitle')),
     },
     {
@@ -135,6 +153,8 @@ export default function SettingsScreen() {
       title: t('logout'),
       subtitle: t('logoutSubtitle'),
       icon: LogOut,
+      color: '#DC2626',
+      bg: '#FEE2E2',
       isDanger: true,
       action: () => handleRowPress('Logout'),
     },
@@ -195,12 +215,12 @@ export default function SettingsScreen() {
                     <View
                       style={[
                         styles.rowIconCircle,
-                        item.isDanger && styles.dangerIconCircle,
+                        { backgroundColor: item.bg || (item.isDanger ? '#FEE2E2' : '#DCFCE7') },
                       ]}
                     >
                       <Icon
                         size={20}
-                        color={item.isDanger ? colors.danger : colors.primaryGreen}
+                        color={item.color || (item.isDanger ? colors.danger : colors.primaryGreen)}
                       />
                     </View>
 

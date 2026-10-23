@@ -43,7 +43,7 @@ const DiaryItem = memo(
         {/* Card Header Row */}
         <View style={styles.cardHeaderRow}>
           <View style={styles.dateGroup}>
-            <Calendar size={18} color={colors.primaryGreen} />
+            <Calendar size={18} color="#9333EA" />
             <Text style={styles.dateText}>{note.date}</Text>
           </View>
 
@@ -53,7 +53,7 @@ const DiaryItem = memo(
               onPress={() => onEdit(note.id)}
               activeOpacity={0.7}
             >
-              <Edit3 size={18} color={colors.primaryGreen} />
+              <Edit3 size={18} color="#9333EA" />
               <Text style={styles.editBtnText}>{editLabel}</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -209,7 +209,7 @@ export default function DiaryScreen() {
         description={t('diaryEmptyDescription')}
         actionTitle={`+ ${t('addNote')}`}
         onActionPress={handleAddNote}
-        icon={<BookOpen size={48} color={colors.primaryGreen} />}
+        icon={<BookOpen size={48} color="#9333EA" />}
       />
     ),
     [t, handleAddNote]

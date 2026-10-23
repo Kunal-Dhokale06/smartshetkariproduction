@@ -185,8 +185,8 @@ export default function AddDiaryNoteScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.formHeader}>
-            <View style={styles.iconCircle}>
-              <BookOpen size={32} color={colors.primaryGreen} />
+            <View style={[styles.iconCircle, { backgroundColor: '#F3E8FF' }]}>
+              <BookOpen size={32} color="#9333EA" />
             </View>
             <Text style={styles.formTitle}>
               {params.noteId ? t('editFarmNote') : t('recordActivity')}
