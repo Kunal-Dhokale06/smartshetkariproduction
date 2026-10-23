@@ -113,12 +113,16 @@ export default function ScanBillScreen() {
   useEffect(() => {
     if (Platform.OS !== 'android') return;
     const backAction = () => {
+      if (scanState === 'scanned') {
+        handleScanAnother();
+        return true;
+      }
       handleClose();
       return true;
     };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
-  }, []);
+  }, [scanState]);
 
   // Request permissions and open Camera
   const handleCaptureCamera = async () => {
@@ -301,7 +305,10 @@ export default function ScanBillScreen() {
       });
 
       // 3. Automatically close scan window and navigate directly to Expenses tab
-      router.replace('/(tabs)/expenses');
+      if (router.canDismiss?.()) {
+        router.dismissAll();
+      }
+      router.navigate('/(tabs)/expenses');
     } catch (err: any) {
       console.error('Failed to save bill:', err);
       Alert.alert('Save Error', err?.message || 'Failed to save bill. Please try again.');
@@ -340,7 +347,16 @@ export default function ScanBillScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
       {/* Top Bar */}
       <View style={styles.topBar}>
-        <TouchableOpacity style={styles.iconBtn} onPress={handleClose}>
+        <TouchableOpacity
+          style={styles.iconBtn}
+          onPress={() => {
+            if (scanState === 'scanned') {
+              handleScanAnother();
+            } else {
+              handleClose();
+            }
+          }}
+        >
           <ChevronLeft size={26} color={colors.white} />
         </TouchableOpacity>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { colors } from '../theme';
 import { LanguageProvider } from '../locales/languageContext';
 import { useAuth } from '../data/authStore';
@@ -33,20 +33,23 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [isReady, setIsReady] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    // Smooth, fast branding presentation: dismiss smoothly once auth hydration finishes
-    if (!isLoading) {
+    // Smooth, fast branding presentation: dismiss smoothly once initial auth hydration finishes
+    if (!isLoading && !isReady) {
       const timer = setTimeout(() => {
         setShowSplash(false);
+        setIsReady(true);
       }, 250);
       return () => clearTimeout(timer);
     }
-  }, [isLoading]);
+  }, [isLoading, isReady]);
 
   useEffect(() => {
-    if (isLoading || showSplash) return;
+    // Only perform route protection once initial splash/hydration is complete
+    if (!isReady || isLoading || showSplash) return;
 
     const inAuthGroup = segments[0] === 'auth';
 
@@ -55,13 +58,18 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     } else if (isAuthenticated && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [isAuthenticated, isLoading, showSplash, segments]);
+  }, [isAuthenticated, isLoading, isReady, showSplash, segments]);
 
-  if (isLoading || showSplash) {
-    return <SplashScreen />;
-  }
-
-  return <>{children}</>;
+  return (
+    <View style={styles.rootContainer}>
+      {children}
+      {showSplash && (
+        <View style={StyleSheet.absoluteFill} pointerEvents="auto">
+          <SplashScreen />
+        </View>
+      )}
+    </View>
+  );
 }
 
 export default function RootLayout() {
@@ -141,3 +149,9 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+  },
+});

@@ -29,7 +29,7 @@ import {
   LogOut,
   Trash2,
 } from 'lucide-react-native';
-import { useRouter, usePathname } from 'expo-router';
+import { useRouter, usePathname, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, fontSize, fontWeight, borderRadius } from '../theme';
 import { useLanguage } from '../locales/languageContext';
@@ -42,12 +42,15 @@ const DRAWER_WIDTH = Math.min(400, Math.max(320, SCREEN_WIDTH * 0.85));
 export default function DrawerMenuScreen() {
   const router = useRouter();
   const pathname = usePathname();
+  const params = useLocalSearchParams<{ from?: string }>();
+  const activeRoute = params.from || pathname;
   const { language, setLanguage, t } = useLanguage();
   const { user, logout } = useAuth();
 
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const isClosing = useRef(false);
+  const isLoggingOut = useRef(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -72,7 +75,7 @@ export default function DrawerMenuScreen() {
   }, []);
 
   const closeDrawer = (onComplete?: () => void) => {
-    if (isClosing.current) return;
+    if (isClosing.current || isLoggingOut.current) return;
     isClosing.current = true;
 
     Animated.parallel([
@@ -87,13 +90,17 @@ export default function DrawerMenuScreen() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.replace('/(tabs)');
-      }
       if (onComplete) {
+        if (router.canGoBack()) {
+          router.back();
+        }
         setTimeout(onComplete, 60);
+      } else {
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.replace('/(tabs)');
+        }
       }
     });
   };
@@ -136,13 +143,18 @@ export default function DrawerMenuScreen() {
   ];
 
   const handleNavigate = (route: string) => {
-    if (pathname === route) {
+    const isCurrentRoute =
+      activeRoute === route ||
+      (route === '/(tabs)' &&
+        (activeRoute === '/' || activeRoute === '/(tabs)' || activeRoute === '/(tabs)/index'));
+
+    if (isCurrentRoute) {
       closeDrawer();
       return;
     }
     closeDrawer(() => {
-      if (route === '/deleted-crops') {
-        router.push('/deleted-crops');
+      if (route === '/deleted-crops' || route === '/profile') {
+        router.push(route as any);
       } else {
         router.navigate(route as any);
       }
@@ -150,9 +162,32 @@ export default function DrawerMenuScreen() {
   };
 
   const handleLogout = async () => {
-    closeDrawer(async () => {
-      await logout();
-      router.replace('/auth');
+    if (isClosing.current || isLoggingOut.current) return;
+    isLoggingOut.current = true;
+    isClosing.current = true;
+
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: -DRAWER_WIDTH,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(overlayOpacity, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start(async () => {
+      try {
+        await logout();
+      } catch (err) {
+        console.warn('Logout error:', err);
+      }
+      try {
+        router.replace('/auth');
+      } catch (err) {
+        console.warn('Logout navigation error:', err);
+      }
     });
   };
 
@@ -202,14 +237,20 @@ export default function DrawerMenuScreen() {
             </View>
 
             {/* Farmer Profile Info */}
-            <Text style={styles.userName}>{user?.name || 'Kunal Deshmukh'}</Text>
+            <TouchableOpacity
+              activeOpacity={0.75}
+              onPress={() => handleNavigate('/profile')}
+              accessibilityLabel="View farmer profile"
+            >
+              <Text style={styles.userName}>{user?.name || 'Kunal Deshmukh'}</Text>
 
-            <View style={styles.subTitleRow}>
-              <View style={styles.statusDot} />
-              <Text style={styles.userSubtitle}>
-                {user?.village ? `${user.village}${user.district ? ', ' + user.district : ''}` : 'Farmer • Maharashtra'}
-              </Text>
-            </View>
+              <View style={styles.subTitleRow}>
+                <View style={styles.statusDot} />
+                <Text style={styles.userSubtitle}>
+                  {user?.village ? `${user.village}${user.district ? ', ' + user.district : ''}` : 'Farmer • Maharashtra'}
+                </Text>
+              </View>
+            </TouchableOpacity>
 
             {/* Language Quick Switch Pill in Header */}
             <TouchableOpacity
@@ -234,9 +275,9 @@ export default function DrawerMenuScreen() {
               const Icon = item.icon;
               const titleText = t(item.labelKey) || item.fallback;
               const isActive =
-                item.fallback === 'Dashboard'
-                  ? pathname === '/' || pathname === '/(tabs)' || pathname === '/(tabs)/index'
-                  : pathname.includes(item.fallback.toLowerCase().replace(' ', ''));
+                item.route === '/(tabs)'
+                  ? activeRoute === '/' || activeRoute === '/(tabs)' || activeRoute === '/(tabs)/index'
+                  : activeRoute === item.route || activeRoute.includes(item.fallback.toLowerCase().replace(' ', ''));
 
               return (
                 <TouchableOpacity

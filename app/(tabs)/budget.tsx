@@ -104,7 +104,7 @@ export default function BudgetScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push({ pathname: '/drawer', params: { from: '/(tabs)/budget' } }))}>
           <Menu size={24} color={colors.primaryText} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('budget')}</Text>

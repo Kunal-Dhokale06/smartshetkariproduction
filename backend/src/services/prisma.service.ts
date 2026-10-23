@@ -24,6 +24,14 @@ export async function connectDatabase(): Promise<void> {
   try {
     await prisma.$connect();
     logger.info('🐘 Connected to Neon PostgreSQL database successfully via Prisma.');
+
+    // Keep Neon Serverless PostgreSQL connection warm to prevent cold socket reset delay
+    if (env.NODE_ENV !== 'test') {
+      const pingInterval = setInterval(() => {
+        prisma.$queryRaw`SELECT 1`.catch(() => {});
+      }, 45000);
+      pingInterval.unref();
+    }
   } catch (error: any) {
     logger.warn('⚠️ Database connection deferred or unreachable: ' + (error?.message || error));
   }

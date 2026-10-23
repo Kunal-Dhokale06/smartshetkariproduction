@@ -140,26 +140,32 @@ export class AuthController {
     try {
       const { identifier, password } = req.body;
       const raw = identifier.trim();
-      const rawDigits = raw.replace(/[\s-]/g, '');
-      const withPlus91 = rawDigits.startsWith('+91')
-        ? rawDigits
-        : /^\d{10}$/.test(rawDigits)
-        ? `+91${rawDigits}`
-        : `+91${rawDigits}`;
-      const withoutPlus91 = rawDigits.replace(/^\+91/, '');
+      const isEmail = raw.includes('@');
+      let user: any = null;
 
-      // Find user by phone (variations) OR by email
-      const user = await prisma.user.findFirst({
-        where: {
-          OR: [
-            { phone: raw },
-            { phone: rawDigits },
-            { phone: withPlus91 },
-            { phone: withoutPlus91 },
-            { email: raw.toLowerCase() },
-          ],
-        },
-      });
+      if (isEmail) {
+        user = await prisma.user.findUnique({
+          where: { email: raw.toLowerCase() },
+        });
+      } else {
+        const rawDigits = raw.replace(/[^\d+]/g, '');
+        const normalizedPhone = rawDigits.startsWith('+')
+          ? rawDigits
+          : rawDigits.length === 10
+          ? `+91${rawDigits}`
+          : rawDigits.length === 12 && rawDigits.startsWith('91')
+          ? `+${rawDigits}`
+          : `+91${rawDigits}`;
+
+        user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { phone: normalizedPhone },
+              { phone: rawDigits },
+            ],
+          },
+        });
+      }
 
       if (!user) {
         return AppResponse.error(

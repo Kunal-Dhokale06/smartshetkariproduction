@@ -331,6 +331,7 @@ export default function AuthScreen() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Registration Fields
   const [name, setName] = useState('');
@@ -524,6 +525,7 @@ export default function AuthScreen() {
   }, []);
 
   const handleLogin = async () => {
+    if (isSubmitting || isLoading) return;
     setFormError(null);
     if (!identifier.trim()) {
       setFormError(language === 'mr' ? 'कृपया मोबाईल क्रमांक किंवा ईमेल टाका' : 'Please enter mobile number or email');
@@ -533,23 +535,14 @@ export default function AuthScreen() {
       setFormError(language === 'mr' ? 'कृपया पासवर्ड टाका' : 'Please enter password');
       return;
     }
+    setIsSubmitting(true);
     try {
-      await login(identifier, password);
+      await login(identifier.trim(), password);
       router.replace('/(tabs)');
     } catch (err: any) {
-      setFormError(err?.message || 'Login failed');
-    }
-  };
-
-  const handleQuickDemoLogin = async () => {
-    setFormError(null);
-    setIdentifier('+919876543210');
-    setPassword('Farmer@123');
-    try {
-      await login('+919876543210', 'Farmer@123');
-      router.replace('/(tabs)');
-    } catch (err: any) {
-      setFormError(err?.message || 'Demo login failed');
+      setFormError(err?.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -684,12 +677,12 @@ export default function AuthScreen() {
                 </View>
 
                 <TouchableOpacity
-                  style={[styles.primaryBtn, isLoading && styles.btnDisabled]}
+                  style={[styles.primaryBtn, (isSubmitting || isLoading) && styles.btnDisabled]}
                   onPress={handleLogin}
-                  disabled={isLoading}
+                  disabled={isSubmitting || isLoading}
                   activeOpacity={0.85}
                 >
-                  {isLoading ? (
+                  {(isSubmitting || isLoading) ? (
                     <ActivityIndicator color={colors.white} size="small" />
                   ) : (
                     <>
@@ -699,13 +692,6 @@ export default function AuthScreen() {
                       <ArrowRight size={18} color={colors.white} />
                     </>
                   )}
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.demoBtn} onPress={handleQuickDemoLogin} disabled={isLoading} activeOpacity={0.8}>
-                  <Sparkles size={16} color="#D97706" />
-                  <Text style={styles.demoBtnText}>
-                    {language === 'mr' ? '⚡ डेमो लॉगिन (कुणाल देशमुख)' : language === 'hi' ? '⚡ डेमो लॉगिन (कुणाल देशमुख)' : '⚡ Quick Demo Login (Kunal Deshmukh)'}
-                  </Text>
                 </TouchableOpacity>
               </View>
             ) : (

@@ -47,8 +47,14 @@ export default function SettingsScreen() {
             text: t('logout'),
             style: 'destructive',
             onPress: async () => {
-              await logout();
-              router.replace('/auth');
+              try {
+                await logout();
+              } catch (err) {
+                console.warn('Logout error:', err);
+              }
+              try {
+                router.replace('/auth');
+              } catch (_) {}
             },
           },
         ]
@@ -138,7 +144,7 @@ export default function SettingsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push({ pathname: '/drawer', params: { from: '/(tabs)/settings' } }))}>
           <Menu size={24} color={colors.primaryText} />
         </TouchableOpacity>
 

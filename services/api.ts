@@ -8,32 +8,42 @@ const USER_STORAGE_KEY = '@smartshetkari_auth_user_v1';
 
 // Automatically determine backend URL based on host environment
 export function getApiBaseUrl(): string {
-  // 1. Check for configured public production API URL first
+  // 1. Check for explicit public production API URL override
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
-  if (Constants.expoConfig?.extra?.apiUrl) {
-    return Constants.expoConfig.extra.apiUrl;
-  }
 
-  // 2. If running in browser (web / mobile web)
-  if (typeof window !== 'undefined' && window.location && window.location.hostname) {
-    const host = window.location.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return 'http://localhost:5000/api/v1';
+  // 2. In Local Development (__DEV__): use local backend
+  if (__DEV__) {
+    // 2a. If running in browser (web / mobile web)
+    if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1') {
+        return 'http://localhost:5000/api/v1';
+      }
+      return `http://${host}:5000/api/v1`;
     }
-    return `http://${host}:5000/api/v1`;
+
+    // 2b. If hostUri is present (Expo Go on real device or emulator)
+    const hostUri = Constants.expoConfig?.hostUri;
+    if (hostUri) {
+      const host = hostUri.split(':')[0];
+      return `http://${host}:5000/api/v1`;
+    }
+
+    // 2c. Android emulator standard loopback
+    if (Platform.OS === 'android') {
+      return 'http://10.0.2.2:5000/api/v1';
+    }
+
+    return 'http://localhost:5000/api/v1';
   }
 
-  // 3. If hostUri is present (Expo Go on real device or emulator)
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) {
-    const host = hostUri.split(':')[0];
-    return `http://${host}:5000/api/v1`;
-  }
-
-  // 4. Default fallback for standalone mobile APK
-  return 'https://smartshetkariproduction-backend.onrender.com/api/v1';
+  // 3. In Production build: use configured Render production backend
+  return (
+    Constants.expoConfig?.extra?.apiUrl ||
+    'https://smartshetkariproduction-backend.onrender.com/api/v1'
+  );
 }
 
 class ApiService {

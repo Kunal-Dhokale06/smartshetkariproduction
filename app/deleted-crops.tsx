@@ -231,7 +231,13 @@ export default function DeletedCropsScreen() {
         title={t('emptyTrash')}
         description={t('emptyTrashDesc')}
         actionTitle={t('myCrops')}
-        onActionPress={() => router.replace('/(tabs)/crops')}
+        onActionPress={() => {
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.replace('/(tabs)/crops');
+          }
+        }}
       />
     ),
     [t, router]

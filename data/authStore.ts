@@ -114,53 +114,17 @@ export async function loginUser(identifier: string, password: string): Promise<A
     await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(res.user));
     api.setAuthHeader(res.token);
 
-    await Promise.allSettled([
+    // Non-blocking initialization of user data stores in background
+    Promise.allSettled([
       resetCropsForUser(res.user.id),
       resetExpensesForUser(res.user.id),
       resetSalesForUser(res.user.id),
       resetDiaryForUser(res.user.id),
-    ]);
+    ]).catch(() => {});
 
     globalError = null;
     return res.user;
   } catch (err: any) {
-    // Only activate offline mode for genuine network-unreachable errors (no internet)
-    // NOT for wrong URL / 404 / bad credentials / JSON parse from wrong endpoint
-    const errMsg = err?.message?.toLowerCase() || '';
-    const isGenuineOffline =
-      errMsg.includes('network request failed') ||
-      errMsg.includes('econnrefused') ||
-      errMsg.includes('etimedout') ||
-      errMsg.includes('enotfound') ||
-      errMsg.includes('no internet') ||
-      errMsg.includes('failed to fetch');
-
-    if (isGenuineOffline) {
-      // Offline mode: farmer has no internet - allow local session
-      const mockOfflineUser: AuthUser = {
-        id: `offline_${Date.now()}`,
-        phone: identifier.startsWith('+') ? identifier : `+91${identifier}`,
-        name: 'Shetkari Farmer',
-        village: '',
-        district: '',
-        state: '',
-        isVerified: false,
-      };
-      const mockToken = `offline_token_${Date.now()}`;
-      globalToken = mockToken;
-      globalUser = mockOfflineUser;
-      await AsyncStorage.setItem(TOKEN_STORAGE_KEY, mockToken);
-      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(mockOfflineUser));
-      api.setAuthHeader(mockToken);
-      await Promise.allSettled([
-        resetCropsForUser(mockOfflineUser.id),
-        resetExpensesForUser(mockOfflineUser.id),
-        resetSalesForUser(mockOfflineUser.id),
-        resetDiaryForUser(mockOfflineUser.id),
-      ]);
-      globalError = null;
-      return mockOfflineUser;
-    }
     const msg = err?.message || 'Login failed. Please check your credentials.';
     globalError = msg;
     throw new Error(msg);
@@ -200,54 +164,17 @@ export async function registerUser(payload: {
     await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(res.user));
     api.setAuthHeader(res.token);
 
-    await Promise.allSettled([
+    // Non-blocking initialization of user data stores in background
+    Promise.allSettled([
       resetCropsForUser(res.user.id),
       resetExpensesForUser(res.user.id),
       resetSalesForUser(res.user.id),
       resetDiaryForUser(res.user.id),
-    ]);
+    ]).catch(() => {});
 
     globalError = null;
     return res.user;
   } catch (err: any) {
-    // Only activate offline mode for genuine network-unreachable errors (no internet)
-    const errMsg = err?.message?.toLowerCase() || '';
-    const isGenuineOffline =
-      errMsg.includes('network request failed') ||
-      errMsg.includes('econnrefused') ||
-      errMsg.includes('etimedout') ||
-      errMsg.includes('enotfound') ||
-      errMsg.includes('no internet') ||
-      errMsg.includes('failed to fetch');
-
-    if (isGenuineOffline) {
-      // Offline mode: farmer has no internet - allow local registered session
-      const mockOfflineUser: AuthUser = {
-        id: `offline_${Date.now()}`,
-        phone: payload.phone,
-        name: payload.name,
-        village: payload.village || '',
-        district: payload.district || '',
-        state: payload.state || '',
-        landArea: payload.landArea,
-        language: payload.language,
-        isVerified: false,
-      };
-      const mockToken = `offline_token_${Date.now()}`;
-      globalToken = mockToken;
-      globalUser = mockOfflineUser;
-      await AsyncStorage.setItem(TOKEN_STORAGE_KEY, mockToken);
-      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(mockOfflineUser));
-      api.setAuthHeader(mockToken);
-      await Promise.allSettled([
-        resetCropsForUser(mockOfflineUser.id),
-        resetExpensesForUser(mockOfflineUser.id),
-        resetSalesForUser(mockOfflineUser.id),
-        resetDiaryForUser(mockOfflineUser.id),
-      ]);
-      globalError = null;
-      return mockOfflineUser;
-    }
     const msg = err?.message || 'Registration failed. Please check your details.';
     globalError = msg;
     throw new Error(msg);
@@ -273,15 +200,15 @@ export async function logoutUser(): Promise<void> {
     await AsyncStorage.multiRemove([
       TOKEN_STORAGE_KEY,
       USER_STORAGE_KEY,
-    ]);
+    ]).catch(() => {});
 
-    // Clear in-memory stores and user cache
-    await Promise.allSettled([
+    // Clear in-memory stores and user cache in background without delaying auth transition
+    Promise.allSettled([
       resetCropsForUser(oldUserId, true),
       resetExpensesForUser(oldUserId, true),
       resetSalesForUser(oldUserId, true),
       resetDiaryForUser(oldUserId, true),
-    ]);
+    ]).catch(() => {});
 
     globalLoading = false;
     notify();

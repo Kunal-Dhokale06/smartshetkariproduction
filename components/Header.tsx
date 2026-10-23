@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Menu, Bell, Sprout } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { colors, spacing, fontSize, fontWeight, borderRadius } from '../theme';
 import { INITIAL_USER } from '../constants';
 import { useLanguage } from '../locales/languageContext';
@@ -21,13 +21,14 @@ export const Header: React.FC<HeaderProps> = ({
   showUserGreeting = false,
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { t, language } = useLanguage();
   const { user } = useAuth();
 
   const farmerName = user?.name ? user.name.split(' ')[0] : 'Farmer';
 
   const handleOpenDrawer = () => {
-    safeNavigate(() => router.push('/drawer'));
+    safeNavigate(() => router.push({ pathname: '/drawer', params: { from: pathname } }));
   };
 
   return (

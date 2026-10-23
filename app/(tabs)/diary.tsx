@@ -219,7 +219,7 @@ export default function DiaryScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push('/drawer'))}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => safeNavigate(() => router.push({ pathname: '/drawer', params: { from: '/(tabs)/diary' } }))}>
           <Menu size={28} color={colors.primaryText} />
         </TouchableOpacity>
 
